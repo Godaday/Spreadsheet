@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ExcelService\**" />
+    <Content Remove="ExcelService\**" />
+    <EmbeddedResource Remove="ExcelService\**" />
+    <None Remove="ExcelService\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Excel2Spreadsheet" Version="1.0.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+</Project>

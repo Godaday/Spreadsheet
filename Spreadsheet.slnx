@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="../Excel2Spreadsheet/Excel2Spreadsheet.csproj" Id="9e1b9542-fe90-4190-a8f0-f9d5c9382c63" />
+  <Project Path="Spreadsheet.csproj" />
+</Solution>

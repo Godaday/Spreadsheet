@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <PackageId>Excel2Spreadsheet</PackageId>
+	  <Version>1.0.3</Version>
+	  <Authors>Godaday</Authors>
+	  <Description>Excel 转换为X-Spreadsheet 的数据并填充数据</Description>
+
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageTags>excel;coordinate;helper;csharp</PackageTags>
+	  <RepositoryUrl>#</RepositoryUrl>
+	  <IncludeSymbols>true</IncludeSymbols>
+	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+	
+
+	
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+  </ItemGroup>
+
+</Project>
