@@ -41,7 +41,7 @@ namespace Spreadsheet.Service
                 List<CellValue>? CellFillData = null;
                 var IsHasCellFillData = sheetsCellValues != null && sheetsCellValues.TryGetValue(ws.Name, out CellFillData);
                 //单Sheet 自动识别填充数据
-                if (!IsHasCellFillData&&sheetsCellValues.Count == 1&& xLWorksheets.Count == 1)
+                if (sheetsCellValues != null&&!IsHasCellFillData&&sheetsCellValues.Count == 1&& xLWorksheets.Count == 1)
                 {
                     IsHasCellFillData = true;
                     CellFillData = sheetsCellValues.Values.ElementAtOrDefault(0);
