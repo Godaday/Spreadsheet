@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <PackageId>Excel2Spreadsheet</PackageId>
-	  <Version>1.0.7</Version>
+	  <Version>1.0.9</Version>
 	  <Authors>Godaday</Authors>
 	  <Description>Excel 转换为X-Spreadsheet 的数据并填充数据</Description>
 

@@ -26,16 +26,19 @@ namespace Spreadsheet.ExcelService.models
         /// <param name="address">单元格地址 例如 A1、BB26</param>
         /// <param name="value">值或计算公式</param>
         /// <param name="isReadOnly">是否不允许编辑，默认允许</param>
-        public CellValue( string address,string value, bool isEditCell = true)
+        public CellValue( string address,string value,
+            bool isEditCell = true, 
+            IndexMode mode = IndexMode.OneBased)
         {
             Address = address;
-           var zeroBase= ExcelCoordinateConverter.A1ToNumeric(address);
+            var zeroBase= ExcelCoordinateConverter.A1ToNumeric(address, mode);
             Row = zeroBase.row;
             Col = zeroBase.col;
             Value = value;
             IsEditCell = isEditCell;
 
         }
+       
         /// <summary>
         /// A1 引用地址，例如 "A1", "H28"。
         /// </summary>
