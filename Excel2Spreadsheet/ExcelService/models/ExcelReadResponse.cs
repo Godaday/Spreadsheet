@@ -12,12 +12,22 @@
 
 namespace Spreadsheet.ExcelService.models
 {
-    public class ExcelReadResponse<T>
+    /// <summary>
+    /// Excel转换结果对象
+    /// </summary>
+    /// <typeparam name="T">报表组件配置类型</typeparam>
+    /// <typeparam name="T1">填充数据类型</typeparam>
+    public class ExcelReadResponse<T,T1>
     {
         /// <summary>
         /// 报表组件配置
         /// </summary>
         public T Config { get; set; }
+
+        /// <summary>
+        /// 填充数据(数据保存修改)
+        /// </summary>
+        public T1 FillData  { get; set; }
         /// <summary>
         /// 报表Id标识
         /// </summary>
