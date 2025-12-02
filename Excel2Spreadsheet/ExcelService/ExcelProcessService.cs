@@ -104,9 +104,7 @@ namespace Spreadsheet.Service
                         var cell = ws.Cell(r1, c1);
 
                         // 文本/公式
-                        string text = !string.IsNullOrEmpty(cell.FormulaA1)
-                            ? "=" + cell.FormulaA1
-                            : cell.Value.ToString() ?? "";
+                        string text = CellTransfer.GetCellValue(cell);
 
 
 

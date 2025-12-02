@@ -11,12 +11,51 @@
  */
 
 using ClosedXML.Excel;
+using System.Globalization;
 
 
 namespace Spreadsheet.ExcelService.ExcelTransfer
 {
     public class CellTransfer
     {
+        public static string GetCellValue(IXLCell cell)
+        {
+            // 1. 公式优先：如果单元格是公式，返回公式字符串（带'='）
+            if (!string.IsNullOrEmpty(cell.FormulaA1))
+            {
+                // 返回公式本身，而不是公式的计算结果
+                return "=" + cell.FormulaA1;
+            }
+
+            // 2. 处理不同数据类型的数值
+            switch (cell.DataType)
+            {
+                case XLDataType.DateTime:
+                    // 如果 ClosedXML 已经识别为 DateTime 类型，直接获取并格式化
+                    return cell.GetDateTime().ToString("yyyy/MM/dd");
+
+                case XLDataType.Number:
+                    // 如果数据类型是 Number：
+                    // 使用 InvariantCulture 确保数字格式（如小数点）在不同环境下一致
+                    return cell.GetDouble().ToString(CultureInfo.InvariantCulture);
+
+                case XLDataType.Text:
+                    // 文本类型，直接获取字符串
+                    return cell.GetString();
+
+                case XLDataType.Boolean:
+                    // 布尔值，转换为字符串（如 "TRUE" 或 "FALSE"）
+                    return cell.GetBoolean().ToString().ToUpperInvariant();
+
+                case XLDataType.Blank:
+                    // 空白单元格
+                    return string.Empty;
+
+                default:
+                    // 默认情况，使用 Value.ToString() 作为后备方案
+                    return cell.Value.ToString() ?? string.Empty;
+            }
+        }
         public static Dictionary<string, object> BuildCellStyle(IXLCell cell)
         {
             var style = new Dictionary<string, object>();
