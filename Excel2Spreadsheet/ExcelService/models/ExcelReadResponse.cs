@@ -36,6 +36,23 @@ namespace Spreadsheet.ExcelService.models
         /// 报表编码
         /// </summary>
         public string ReportCode { get; set; }
+
+
+        /// <summary>
+        /// 工厂编码
+        /// </summary>
+        public string? FactoryNo { get; set; }
+
+        /// <summary>
+        /// 模板编码
+        /// </summary>
+        public string? TemplateCode { get; set; }
+
+        /// <summary>
+        /// 报表日期
+        /// </summary>
+        public DateTime ReportDate { get; set; }
+
         /// <summary>
         /// 报表数据
         /// </summary>
