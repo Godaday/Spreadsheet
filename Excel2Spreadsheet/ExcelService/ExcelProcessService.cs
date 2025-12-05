@@ -12,6 +12,7 @@
 
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Validation;
+using Excel2Spreadsheet.ExcelService;
 using Spreadsheet.ExcelService.ExcelTransfer;
 using Spreadsheet.ExcelService.models;
 using System.Text.Json;
@@ -158,6 +159,150 @@ namespace Spreadsheet.Service
 
         }
 
+        public List<SpreadsheetSheet> ReadExcelToSpreadsheetSheetAutoMergeCell(IXLWorksheets xLWorksheets, Dictionary<string,
+            List<CellValue>>? sheetsCellValues = null, int[] ? mergeColumns = null)
+        {
+            List<SpreadsheetSheet> list = new List<SpreadsheetSheet>();
+
+            foreach (IXLWorksheet xLWorksheet in xLWorksheets)
+            {
+                List<CellValue> value = null;
+                bool flag = sheetsCellValues?.TryGetValue(xLWorksheet.Name, out value) ?? false;
+
+                if (sheetsCellValues != null && !flag && sheetsCellValues.Count == 1 && xLWorksheets.Count == 1)
+                {
+                    flag = true;
+                    value = sheetsCellValues.Values.ElementAtOrDefault(0);
+                }
+
+                SpreadsheetSheet spreadsheetSheet = new SpreadsheetSheet
+                {
+                    name = xLWorksheet.Name,
+                    rows = new Dictionary<int, SpreadsheetRow>(),
+                    cols = new Dictionary<int, object>(),
+                    merges = new List<string>(),
+                    styles = new List<object>()
+                };
+
+                // ===============================
+                // 读取列宽
+                // ===============================
+                int num = xLWorksheet.LastColumnUsed()?.ColumnNumber() ?? 0;
+                for (int i = 1; i <= num; i++)
+                {
+                    IXLColumn column = xLWorksheet.Column(i);
+                    double width = (column.Width > 0.0) ? (column.Width * 8.0) : 100.0;
+                    spreadsheetSheet.cols[i - 1] = new { width };
+                }
+
+                // ===============================
+                // 读取模板已有的合并
+                // ===============================
+                Dictionary<string, (int, int)> mergeDict = new Dictionary<string, (int, int)>();
+                foreach (IXLRange mergedRange in xLWorksheet.MergedRanges)
+                {
+                    string key = mergedRange.FirstCell().Address.ToString();
+                    int rows = mergedRange.RowCount() - 1;
+                    int cols = mergedRange.ColumnCount() - 1;
+                    mergeDict[key] = (rows, cols);
+                    spreadsheetSheet.merges.Add(mergedRange.RangeAddress.ToString());
+                }
+
+                // ===============================
+                // 读取单元格
+                // ===============================
+                int num2 = xLWorksheet.LastRowUsed()?.RowNumber() ?? 0;
+
+                if (spreadsheetSheet.styles.Count == 0)
+                {
+                    spreadsheetSheet.styles.Add(new Dictionary<string, object>());
+                }
+
+                for (int r1 = 1; r1 <= num2; r1++)
+                {
+                    int rowKey = r1 - 1;
+
+                    SpreadsheetRow spreadsheetRow = new SpreadsheetRow
+                    {
+                        cells = new Dictionary<int, SpreadsheetCell>(),
+                        height = (xLWorksheet.Row(r1).Height > 0.0)
+                                 ? new double?(xLWorksheet.Row(r1).Height * 1.333)
+                                 : null
+                    };
+
+                    for (int c1 = 1; c1 <= num; c1++)
+                    {
+                        int colKey = c1 - 1;
+
+                        IXLCell cell = xLWorksheet.Cell(r1, c1);
+                        string cellValue = CellTransfer.GetCellValue(cell);
+                        Dictionary<string, object> styleDict = CellTransfer.BuildCellStyle(cell);
+
+                        string styleJson = JsonSerializer.Serialize(styleDict);
+                        int styleIndex = spreadsheetSheet.styles.FindIndex(s => JsonSerializer.Serialize(s) == styleJson);
+
+                        if (styleIndex == -1)
+                        {
+                            styleIndex = spreadsheetSheet.styles.Count;
+                            spreadsheetSheet.styles.Add(styleDict);
+                        }
+
+                        SpreadsheetCell spreadsheetCell = new SpreadsheetCell
+                        {
+                            text = cellValue,
+                            style = styleIndex,
+                            merge = null,
+                            editable = true
+                        };
+
+                        // 数据重写
+                        if (flag && value != null && value.Count > 0)
+                        {
+                            CellValue rewriteValue = value.FirstOrDefault(val =>
+                                (val.Row == r1 && val.Col == c1) ||
+                                val.Address == cell.Address.ColumnLetter + cell.Address.RowNumber);
+
+                            if (rewriteValue != null)
+                            {
+                                spreadsheetCell.text = rewriteValue.Value;
+                                spreadsheetCell.editable = rewriteValue.IsEditCell;
+                            }
+                        }
+
+                        // 处理模板已有合并
+                        string addrKey = cell.Address.ToString();
+                        if (mergeDict.TryGetValue(addrKey, out var mergeInfo))
+                        {
+                            spreadsheetCell.merge = new int[2] { mergeInfo.Item1, mergeInfo.Item2 };
+                        }
+
+                        spreadsheetRow.cells[colKey] = spreadsheetCell;
+                    }
+
+                    spreadsheetSheet.rows[rowKey] = spreadsheetRow;
+                }
+
+                // ===============================
+                // 自动合并列（按列纵向合并相同内容）
+                // ===============================
+
+                if (mergeColumns != null&& mergeColumns.Any()) {
+                    MergeHelper.AutoMergeRows(spreadsheetSheet, mergeColumns);
+                }
+
+              
+
+                // ===========================================================
+
+                list.Add(spreadsheetSheet);
+            }
+
+            return list;
+        }
+        
+
+
 
     }
+
 }

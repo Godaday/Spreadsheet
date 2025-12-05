@@ -21,5 +21,10 @@ namespace Spreadsheet.Service
     {
         public List<SpreadsheetSheet> ReadExcelToSpreadsheetSheet(IXLWorksheets xLWorksheets,
             Dictionary<string, List<CellValue>>? sheetsCellValues=null);
+        public List<SpreadsheetSheet> ReadExcelToSpreadsheetSheetAutoMergeCell(IXLWorksheets xLWorksheets,
+
+            Dictionary<string, List<CellValue>>? sheetsCellValues = null, int[]? mergeColumns = null);
+
+
     }
 }
